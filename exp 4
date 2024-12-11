@@ -1,0 +1,67 @@
+Write a C++ program that creates an output file, writes information to it, closes the file, open 
+it again as an input file and read the information from the file.
+
+
+
+#include <iostream>
+#include <fstream>
+using namespace std;
+
+class Employee {
+    char name[20];
+    int emp_id;
+    float salary;
+
+public:
+    void accept() {
+        cout << "Enter Name: ";
+        cin >> name;
+        cout << "Enter Employee ID: ";
+        cin >> emp_id;
+        cout << "Enter Salary: ";
+        cin >> salary;
+    }
+
+    void display() const {
+        cout << "\n" << name << "\t" << emp_id << "\t" << salary;
+    }
+};
+
+int main() {
+    Employee employees[5];
+    fstream file;
+    int numEmployees;
+
+    cout << "\nHow many employees' information would you like to store (max 5)? ";
+    cin >> numEmployees;
+
+    file.open("employee_data.bin", ios::out | ios::binary);
+    if (!file) {
+        cout << "Error opening file for writing!" << endl;
+        return 1;
+    }
+
+    cout << "\nEnter information for " << numEmployees << " employees:\n";
+    for (int i = 0; i < numEmployees; i++) {
+        cout << "\nEmployee " << (i + 1) << ":\n";
+        employees[i].accept();
+        file.write((char*)&employees[i], sizeof(Employee));
+    }
+    file.close();
+
+    file.open("employee_data.bin", ios::in | ios::binary);
+    if (!file) {
+        cout << "Error opening file for reading!" << endl;
+        return 1;
+    }
+
+    cout << "\nInformation of employees is as follows:\n";
+    cout << "Name\tEmp_ID\tSalary";
+    for (int i = 0; i < numEmployees; i++) {
+        file.read((char*)&employees[i], sizeof(Employee));
+        employees[i].display();
+    }
+    file.close();
+
+    return 0;
+}
