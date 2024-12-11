@@ -1,0 +1,144 @@
+
+Imagine a publishing company which does marketing for book and audio cassette versions. 
+Create a class publication that stores the title (a string) and price (type float) of publications. 
+From this class derive two classes: book which adds a page count (type int) and tape which adds 
+a playing time in minutes (type float). 
+Write a program that instantiates the book and tape class, allows user to enter data and displays 
+the data members. If an exception is caught, replace all the data member values with zero 
+values. 
+
+
+#include <iostream>
+#include <cstring>
+#include <exception>
+using namespace std;
+
+class Publication {
+protected:
+    string title;
+    float price;
+public:
+    Publication(string t = "No title", float p = 0.0) : title(t), price(p) {}
+    virtual void display() const = 0;
+};
+
+class Book : public Publication {
+    int pages;
+public:
+    Book(string t = "No title", float p = 0.0, int pa = 0) : Publication(t, p), pages(pa) {}
+
+    void getBookData() {
+        cout << "Enter details of the book:" << endl;
+        cout << "Enter title of the book: ";
+        cin.ignore();
+        getline(cin, title);
+        cout << "Enter price of the book: ";
+        cin >> price;
+        cout << "Enter pages of the book: ";
+        cin >> pages;
+
+        try {
+            if (pages < 500 || pages > 1500) throw pages;
+            if (price < 100 || price > 2000) throw price;
+            display();
+        }
+        catch (int) {
+            cout << "Caught exception in Book: Invalid number of pages" << endl;
+            resetData();
+            throw;
+        }
+        catch (float) {
+            cout << "Caught exception in Book: Invalid price" << endl;
+            resetData();
+            throw;
+        }
+    }
+
+    void display() const override {
+        cout << "\nBook Details:\n";
+        cout << "Title: " << title << "\nPrice: " << price << "\nPages: " << pages << endl;
+    }
+
+private:
+    void resetData() {
+        title = "0";
+        price = 0.0;
+        pages = 0;
+        display();
+    }
+};
+
+class Tape : public Publication {
+    float playTime;
+public:
+    Tape(string t = "No title", float p = 0.0, float m = 0.0) : Publication(t, p), playTime(m) {}
+
+    void getTapeData() {
+        cout << "Enter details of the tape:" << endl;
+        cout << "Enter title of the tape: ";
+        cin.ignore();
+        getline(cin, title);
+        cout << "Enter price of the tape: ";
+        cin >> price;
+        cout << "Enter play time of the tape (in minutes): ";
+        cin >> playTime;
+
+        try {
+            if (playTime < 30.0 || playTime > 90.0) throw playTime;
+            if (price < 500 || price > 1000) throw price;
+            display();
+        }
+        catch (float) {
+            cout << "Caught exception in Tape: Invalid play time or price" << endl;
+            resetData();
+            throw;
+        }
+    }
+
+    void display() const override {
+        cout << "\nTape Details:\n";
+        cout << "Title: " << title << "\nPrice: " << price << "\nPlay Time: " << playTime << " minutes" << endl;
+    }
+
+private:
+    void resetData() {
+        title = "0";
+        price = 0.0;
+        playTime = 0.0;
+        display();
+    }
+};
+
+int main() {
+    Book book;
+    Tape tape;
+    int choice;
+
+    cout << "Do you want to buy a book (Press 1) or a tape (Press 2)? ";
+    cin >> choice;
+
+    switch (choice) {
+        case 1:
+            try {
+                book.getBookData();
+            }
+            catch (...) {
+                cout << "Caught exception in main()" << endl;
+            }
+            break;
+
+        case 2:
+            try {
+                tape.getTapeData();
+            }
+            catch (...) {
+                cout << "Caught exception in main()" << endl;
+            }
+            break;
+
+        default:
+            cout << "Invalid choice. Please try again." << endl;
+    }
+
+    return 0;
+}
