@@ -1,0 +1,131 @@
+
+
+Write C++ program using STL for sorting and searching user defined records such as 
+personal records (Name, DOB, Telephone number etc) using vector container.  OR 
+Write C++ program using STL for sorting and searching user defined records such as 
+Item records (Item code, name, cost, quantity etc) using vector container.
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+using namespace std;
+
+struct RecordEntry {
+    string name;
+    string dob;
+    string phone;
+
+    // Display a record entry
+    void display() const {
+        cout << "Name: " << name << ", DOB: " << dob << ", Phone: " << phone << endl;
+    }
+};
+
+class Record {
+private:
+    vector<RecordEntry> records;
+
+public:
+    void addRecord();
+    void displayRecords() const;
+    void searchRecord(const string& key) const;
+    void sortRecords();
+};
+
+void Record::addRecord() {
+    int count;
+    cout << "Enter the number of records: ";
+    cin >> count;
+
+    for (int i = 0; i < count; i++) {
+        RecordEntry entry;
+        cout << "Enter name: ";
+        cin >> ws; // To clear the input buffer
+        getline(cin, entry.name);
+        cout << "Enter date of birth (YYYY-MM-DD): ";
+        cin >> entry.dob;
+        cout << "Enter phone number: ";
+        cin >> entry.phone;
+
+        records.push_back(entry);
+    }
+    cout << "Records added successfully.\n";
+}
+
+void Record::displayRecords() const {
+    if (records.empty()) {
+        cout << "No records to display.\n";
+        return;
+    }
+    for (const auto& record : records) {
+        record.display();
+    }
+}
+
+void Record::searchRecord(const string& key) const {
+    bool found = false;
+    for (const auto& record : records) {
+        if (record.name == key || record.dob == key || record.phone == key) {
+            cout << "Record found:\n";
+            record.display();
+            found = true;
+            break;
+        }
+    }
+    if (!found) {
+        cout << "Record not found.\n";
+    }
+}
+
+void Record::sortRecords() {
+    if (records.empty()) {
+        cout << "No records to sort.\n";
+        return;
+    }
+    sort(records.begin(), records.end(), [](const RecordEntry& a, const RecordEntry& b) {
+        return a.name < b.name; // Sorting by name
+    });
+    cout << "Records sorted successfully.\n";
+}
+
+int main() {
+    Record r;
+    int choice;
+    string searchKey;
+
+    while (true) {
+        cout << "\nMenu:\n"
+             << "1. Add Record\n"
+             << "2. Display Records\n"
+             << "3. Search Record\n"
+             << "4. Sort Records\n"
+             << "5. Exit\n"
+             << "Enter your choice: ";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            r.addRecord();
+            break;
+        case 2:
+            r.displayRecords();
+            break;
+        case 3:
+            cout << "Enter name, DOB, or phone to search: ";
+            cin >> ws; // To clear the input buffer
+            getline(cin, searchKey);
+            r.searchRecord(searchKey);
+            break;
+        case 4:
+            r.sortRecords();
+            break;
+        case 5:
+            cout << "Exiting program.\n";
+            return 0;
+        default:
+            cout << "Invalid choice! Please try again.\n";
+        }
+    }
+    return 0;
+}
